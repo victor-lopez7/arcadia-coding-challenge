@@ -1,14 +1,17 @@
-import express from 'express'
-import cors from 'cors';
-import { apiRoutes } from './routes';
+import mongoose from 'mongoose';
 
-const app: express.Application = express();
-app.use( express.json() );
-app.use( cors() );
-app.use( express.static( 'dist/frontend' ) )
-app.use( '/api', apiRoutes )
+import app from './app';
+import config from './config';
 
 const PORT = process.env.PORT || 3000;
+
+mongoose.connect(
+  config.databaseURL,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  () => {
+    console.info('Openned connection with DB');
+  }
+)
 
 app.listen( PORT, () => {
   console.info( 'Server listening on port ' + PORT );
