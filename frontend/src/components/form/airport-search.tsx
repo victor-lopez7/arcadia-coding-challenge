@@ -1,12 +1,16 @@
 import React, { FormEvent, } from "react";
 import Airport from "../../models/airport";
 import AirportService from "../../services/airport-service";
+import Observable from "../../services/observable";
 import '../../styles/airport-search.css'
 
-type AirportProps = {};
-type AirportState = { 
+type AirportSearchProps = {
+    changeObservable?: Observable<{arrivalAirport?: Airport}>
+};
+
+export type AirportSearchState = { 
     airportSearchResults: Airport[],
-    selectedAirport: Airport | undefined,
+    arrivalAirport?: Airport,
     inputText: string,
     activeIdx: number,
 };
@@ -15,24 +19,22 @@ const AIRPORT_SEARCH_TEXT = {
     searchPlaceholder: 'Search by ICAO, airport name or municipality'
 }
 
-export default class AirportSearch extends React.Component<AirportProps, AirportState> {
+export default class AirportSearch extends React.Component<AirportSearchProps, AirportSearchState> {
 
     private _unfocusEventListener!: EventListener;
 
-    constructor(props: AirportProps){
+    constructor(props: AirportSearchProps){
         super(props);
         this.state = {
             airportSearchResults: [],
-            selectedAirport: undefined,
+            arrivalAirport: undefined,
             inputText: '',
             activeIdx: -1,
         }
     }
 
     componentDidMount(){
-        this._unfocusEventListener = event => this.resetSearchResults();
-
-        document.addEventListener( 'click', event => this._unfocusEventListener(event) );
+        document.addEventListener( 'click', () => this.resetSearchResults() );
     }
 
     componentWillUnmount(){
@@ -42,7 +44,8 @@ export default class AirportSearch extends React.Component<AirportProps, Airport
     _handleSearchInput(event: FormEvent<HTMLInputElement>){
         const searchParam = event.currentTarget.value;
 
-        this.setState({selectedAirport: undefined, inputText: searchParam});
+        this.setState({inputText: searchParam});
+        this.changeSelectedAirport(undefined);
         
         this.search(searchParam);
     }
@@ -53,11 +56,12 @@ export default class AirportSearch extends React.Component<AirportProps, Airport
     }
 
     resetSearchResults(){
-        this.setState({airportSearchResults: []})
+        this.setState({ airportSearchResults: [] })
     }
 
-    changeSelectedAirport(selectedAirport: Airport){
-        this.setState({ selectedAirport });
+    changeSelectedAirport(arrivalAirport?: Airport){
+        this.setState({ arrivalAirport });
+        this.props.changeObservable?.notifyAll({target: { arrivalAirport }});
     }
 
     search(searchParam: string){
@@ -69,7 +73,7 @@ export default class AirportSearch extends React.Component<AirportProps, Airport
     }
 
     renderAirportResult(airport: Airport) {
-        const isActiveClass = airport.id === this.state.selectedAirport?.id
+        const isActiveClass = airport.id === this.state.arrivalAirport?.id
             ?  'active'
             : ''
         ;
@@ -90,7 +94,7 @@ export default class AirportSearch extends React.Component<AirportProps, Airport
                 <div>
                     <label htmlFor="arrivalAirportCode" className="form-label">Arrival airport (ICAO)</label>
                     <input type="text" className="form-control" name="arrivalAirportCode"
-                        value={ this.state.selectedAirport?.id || this.state.inputText }
+                        value={ this.state.arrivalAirport?.id || this.state.inputText }
                         onInput={ event => this._handleSearchInput(event) }
                         onFocus={ e => this.search(this.state.inputText) }
                         onClick={ e => e.stopPropagation() }

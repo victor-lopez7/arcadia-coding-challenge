@@ -73,6 +73,7 @@ airportsRoutes.route('/:id').get(async (req, res) => {
 });
 
 airportsRoutes.route('/:id/arrivals').get(async (req, res) => {
+    
     const { begin, end } = req.query;
     const arrivalAirportCode = req.params.id.toUpperCase();
 

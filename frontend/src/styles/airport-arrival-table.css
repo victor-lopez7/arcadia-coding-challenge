@@ -1,0 +1,8 @@
+.AirportArrivalTable {
+    display: flex;
+    flex-direction: column;
+}
+
+.spinner-border {
+    align-self: center;
+}

@@ -1,12 +1,12 @@
 import React, { DetailedHTMLProps, FormEvent, InputHTMLAttributes } from "react";
+import Observable from "../../services/observable";
 
 import '../../styles/date-range-input.css';
 
-type DateRangeInputProps = {  }
-type DateRangeInputState = { beginDate: Date | undefined, endDate: Date | undefined, }
+type DateRangeInputProps = { changeObservable?: Observable<DateRangeInputState> }
+type DateRangeInputState = { beginDate?: Date, endDate?: Date }
 
 const MAX_DAYS_RANGE = 7;
-const SEVEN_DAYS_IN_MILLIS = MAX_DAYS_RANGE * 24 * 60 * 60;
 
 type DateInputProps = DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> & {label?: String};
 
@@ -53,29 +53,35 @@ export default class DateRangeInput extends React.Component<DateRangeInputProps,
         return new Date( Math.min( date1.getTime(), date2.getTime() ) )
     }
 
+    private changeState(newState: any){
+        this.props.changeObservable?.notifyAll({target: {...this.state , ...newState}});
+        this.setState(newState);
+    }
+
     private _handleEndDateChange(event: FormEvent<HTMLInputElement>) {
         const { value } = event.currentTarget
-        this.setState({ endDate: new Date( value ) });
+        this.changeState({ endDate: new Date( value ) });
     }
 
     private _handleBeginDateChange(event: FormEvent<HTMLInputElement>){
         const { value } = event.currentTarget;
         const beginDate = new Date( value );
 
-        if(this.state.endDate && this.firstDateInRange){
+        if(this.firstDateInRange && this.state.endDate){
             const greaterThanEndDate =  beginDate.getTime() > this.state.endDate.getTime();
-            const lowerThanSevenDaysBeforeEnd = beginDate.getTime() < this.firstDateInRange.getTime()
+            const lowerThanSevenDaysBeforeEnd = beginDate.getTime() < this.firstDateInRange.getTime();
             
             if(greaterThanEndDate || lowerThanSevenDaysBeforeEnd){
                 const sevenDaysAfterBeginDate = DateRangeInput.addDaysToDate(beginDate, MAX_DAYS_RANGE);
-                console.log(sevenDaysAfterBeginDate);
                 const endDate = DateRangeInput.minDate( sevenDaysAfterBeginDate, this.today );
-                this.setState({ beginDate, endDate });          
+                this.changeState({ beginDate, endDate });
+            } else {
+                this.changeState({ beginDate });
             }
 
         } else {
 
-            this.setState({ beginDate });
+            this.changeState({ beginDate });
             
         }
     }
@@ -85,14 +91,13 @@ export default class DateRangeInput extends React.Component<DateRangeInputProps,
     }
     
     get endDateString(){
-        console.log(this.state.endDate)
         return DateRangeInput.formatDateAsDateInputString(this.state.endDate);
     }
 
     get endDateMax(){
         if(this.state.beginDate){
             const lastDayInRange = DateRangeInput.addDaysToDate(this.state.beginDate, + MAX_DAYS_RANGE);
-            return new Date( Math.min( lastDayInRange.getTime(), this.today.getTime() ) );
+            return DateRangeInput.minDate(lastDayInRange, this.today) ;
         }
         return this.today;
     }

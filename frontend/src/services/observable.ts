@@ -1,16 +1,15 @@
 
 export type ChangeEvent<T> = {
-    [P in keyof T]?: T[P] extends Function ? never : T[P] 
+    target: T,
 }
 export type Callback<T> = (event: ChangeEvent<T>) => void;
-export type CallbackOperation<T> = (callback: Callback<T>) => void;
 
 export default class Observable<T> {
     private _observers: Callback<T>[]  = [];
 
-    subscribe(callback: Callback<T>): CallbackOperation<T>{
+    subscribe(callback: Callback<T>){
         this._observers.push(callback);
-        return this.unsubscribe.bind(this, callback)
+        return () => this.unsubscribe(callback);
     }
 
     notifyAll(event: ChangeEvent<T>){

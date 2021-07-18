@@ -2,6 +2,17 @@ import { AIRPORTS_API_BASE } from "../config/client-config";
 import AirportArrival from "../models/airport-arrival";
 import Observable, { Callback } from "./observable";
 
+export enum AirportArrivalServiceStatus {
+    LOADING,
+    ERROR,
+    COMPLETED,
+}
+
+export type AirportArrivalSeviceState = {
+    currentArrivals?: AirportArrival[],
+    status: AirportArrivalServiceStatus,
+}
+
 export class AirportArrivalService {
     // singleton
     private static _instance: AirportArrivalService;
@@ -13,24 +24,46 @@ export class AirportArrivalService {
     }
 
     private _currentAirportArrrivals: AirportArrival[];
-    private _currentAirportArrrivalsObservable: Observable<AirportArrival[]>;
+    private _currentAirportArrrivalsObservable: Observable<AirportArrivalSeviceState>;
 
     private constructor(){
-        this._currentAirportArrrivalsObservable = new Observable<AirportArrival[]>();
+        this._currentAirportArrrivalsObservable = new Observable();
         this._currentAirportArrrivals = [];
     }
 
-    subscribe(callback: Callback<AirportArrival[]>){
+    subscribe(callback: Callback<AirportArrivalSeviceState>){
         return this._currentAirportArrrivalsObservable.subscribe( callback );
     }
 
     async changeArrivals(id: string, beginDate: Date, endDate: Date){
-        const [begin, end] = [beginDate, endDate].map(date => date.getTime() / 1000);
-        const arrivalsResponse =
-            await fetch(`${AIRPORTS_API_BASE}${id}/arrivals?begin=${begin}&end=${end}`);
-        this._currentAirportArrrivals = await arrivalsResponse.json();
+        const [begin, end] = [beginDate, endDate].map(date => Math.floor(date.getTime() / 1000));
+        
+        this._currentAirportArrrivalsObservable.notifyAll({
+            target: { status: AirportArrivalServiceStatus.LOADING, }
+        });
 
-        this._currentAirportArrrivalsObservable.notifyAll(this._currentAirportArrrivals);
+        let arrivalsResponse;
+
+        try {
+            arrivalsResponse =
+                await fetch(`${AIRPORTS_API_BASE}${id}/arrivals?begin=${begin}&end=${end}`);
+            
+            this._currentAirportArrrivals = await arrivalsResponse.json();
+
+            this._currentAirportArrrivalsObservable.notifyAll({
+                target: {
+                    currentArrivals: this._currentAirportArrrivals,
+                    status: AirportArrivalServiceStatus.COMPLETED
+                },
+            });
+        }
+        catch {
+            this._currentAirportArrrivalsObservable.notifyAll({
+                target: { status: AirportArrivalServiceStatus.ERROR, }
+            })
+        }
+            
+        
     }
 }
 

@@ -1,0 +1,9 @@
+.App {
+    display: flex;
+    flex-direction: column;
+}
+
+.AirportArrivalTable{
+    margin-top: 50px;
+    height: 500px;
+}

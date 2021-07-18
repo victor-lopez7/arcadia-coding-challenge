@@ -1,8 +1,25 @@
 .AirportSearch {
     position: relative;
+    --list-border: 2px solid #86b7fe;
 }
 
 .AirportSearch ul {
     position: absolute;
     width: 100%;
+    z-index: 99;
+    margin-top: 3px;
+}
+
+.AirportSearch ul li {
+    cursor: pointer;
+    border-right: var(--list-border);
+    border-left: var(--list-border);
+}
+
+.AirportSearch ul li:first-child {
+    border-top:var(--list-border);
+}
+
+.AirportSearch ul li:last-child {
+    border-bottom: var(--list-border);
 }
