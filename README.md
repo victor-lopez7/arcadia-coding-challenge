@@ -9,8 +9,10 @@ Repository to store the solution for the arcadia coding challenge along with rel
 Install the packages:
 `npm install`
 
-Build and run client app (webpack server [http://localhost:8080]) and backend microservice ([http://localhost:3000])) :
+Build and run client app (webpack server [http://localhost:8080](http://localhost:8080)) and backend microservice ([http://localhost:3000](http://localhost:3000))) :
 `npm run dev`
+
+You can see the app in [http://localhost:8080](http://localhost:8080).
 
 ## Backend
 I have used NodeJS, ExpressAPI and a hosted (Atlas) MongoDB database to build the microservice that provides:
