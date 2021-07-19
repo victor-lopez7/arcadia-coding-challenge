@@ -14,12 +14,14 @@ type AirportArrivalTableState = {
 
 const bigWidth = 250, rowsShown = 7, shortWidth = 150;
 
+//  format date in a visually apealing format
 const formatDateCell = (params: any) => {
     const [date, timeRaw] = params.value.toISOString().split('T');
     const [time] = timeRaw.split('.');
     return `${date} ${time}`
 }
 
+// Column defintion
 const columns = [
   { field: 'arrivalAirport', headerName: 'Arrival Airport', width: shortWidth },
   { 
@@ -53,6 +55,7 @@ export default class AirportArrivalTable extends React.Component<AirportArrivalT
     constructor(props: AirportArrivalTableProps){
         super(props);
         
+        // subscribe to service to listen for changes in the current arrivals displayed
         this._unsubscribeService = 
             this.props.airportArrivalService.subscribe( this.serviceUpdate.bind(this) );
 
@@ -62,15 +65,18 @@ export default class AirportArrivalTable extends React.Component<AirportArrivalT
         }
     }
 
+    // avoid memory leaks unsubscribing from observable
     componentWillUnmount(){
         this._unsubscribeService();
     }
 
+    // update made from the service (subscription callback)
     serviceUpdate(event: ChangeEvent<AirportArrivalSeviceState>){
         const { currentArrivals, status } = event.target;
         this.setState({ arrivals: currentArrivals ||  [], status })
     }
 
+    //  parse data to populate correctly the table (provide ID)
     get arrivalsData(){
         return this.state.arrivals.map((arrival, i) => {
             return {
@@ -102,6 +108,7 @@ export default class AirportArrivalTable extends React.Component<AirportArrivalT
         )
     }
 
+    // conditionally render depending on the arrival airport service
     renderContent(){
         switch(this.state.status){
             case AirportArrivalServiceStatus.LOADING:

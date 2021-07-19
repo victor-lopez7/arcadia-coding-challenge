@@ -1,6 +1,7 @@
 import { AIRPORTS_API_BASE } from "../config/client-config";
 import Airport from "../models/airport";
 
+//  encasulates calls to retrieve airport data
 export default class AirportService {
 
     static async searchAirports(searchQuery: string, limit?: number): Promise<Airport[]>{

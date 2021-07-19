@@ -23,6 +23,7 @@ export class AirportArrivalService {
             : new AirportArrivalService();
     }
 
+    // State of the service data (arrivals) and observable of this state
     private _currentAirportArrrivals: AirportArrival[];
     private _currentAirportArrrivalsObservable: Observable<AirportArrivalSeviceState>;
 
@@ -30,20 +31,25 @@ export class AirportArrivalService {
         this._currentAirportArrrivalsObservable = new Observable();
         this._currentAirportArrrivals = [];
     }
-
+    
+    //  delegates subscription as it is a private field
+    //  also we avoid another classes to calling notifyAll
     subscribe(callback: Callback<AirportArrivalSeviceState>){
         return this._currentAirportArrrivalsObservable.subscribe( callback );
     }
 
+    // method for requesting an state change (new arrivals data)
     async changeArrivals(id: string, beginDate: Date, endDate: Date){
         const [begin, end] = [beginDate, endDate].map(date => Math.floor(date.getTime() / 1000));
         
+        // notify that a state change has been initiated
         this._currentAirportArrrivalsObservable.notifyAll({
             target: { status: AirportArrivalServiceStatus.LOADING, }
         });
 
         let arrivalsResponse;
 
+        // we try to retrieve data and notify if it has been succesful
         try {
             arrivalsResponse =
                 await fetch(`${AIRPORTS_API_BASE}${id}/arrivals?begin=${begin}&end=${end}`);
@@ -58,6 +64,7 @@ export class AirportArrivalService {
             });
         }
         catch {
+            // we notify error if it happens to be the case
             this._currentAirportArrrivalsObservable.notifyAll({
                 target: { status: AirportArrivalServiceStatus.ERROR, }
             })

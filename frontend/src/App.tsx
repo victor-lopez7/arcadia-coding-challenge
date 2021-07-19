@@ -4,7 +4,8 @@ import AirportArrivalTable from './components/airport-arrival-table';
 import AirportArrivalForm from './components/form/airport-arrival-form';
 import airportArrivalService from './services/airport-arrival-service';
 
-
+// Base app component, puts in place the other components
+// and provides the service to the other components
 class App extends React.Component {
 
   private _airportArrivalService;

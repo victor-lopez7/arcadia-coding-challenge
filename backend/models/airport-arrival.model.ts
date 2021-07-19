@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import AirportArrival from "../../frontend/src/models/airport-arrival";
 
+// model for airport arrivals (DB)
+
 const airportArrivalSchema = new mongoose.Schema<AirportArrival>({
     arrivalAirport: String,
     beginDate: Number,

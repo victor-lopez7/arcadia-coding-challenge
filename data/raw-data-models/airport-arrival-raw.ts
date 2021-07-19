@@ -1,3 +1,4 @@
+// model for the raw data coming from the OpenSky API
 export default interface AirportArrivalRaw {
     icao24:	string,
     firstSeen: number,

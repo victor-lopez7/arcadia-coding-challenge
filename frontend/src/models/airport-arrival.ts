@@ -1,3 +1,4 @@
+// Model for airport arrivals in the app
 export default interface AirportArrival {
     arrivalAirport: string,
     beginDate: number,

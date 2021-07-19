@@ -1,3 +1,4 @@
+// Classic functional Observable implementation
 
 export type ChangeEvent<T> = {
     target: T,

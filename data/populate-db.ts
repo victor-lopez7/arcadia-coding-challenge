@@ -7,6 +7,8 @@ import config from '../backend/config';
 import AirportRaw from './raw-data-models/airport-raw';
 import RawDataParser from './raw-data-parser';
 
+// Utility for filling the DB with json data for airports
+
 async function populateAirportsCollection(rawAirports: Array<AirportRaw>){
     const airports: Array<Airport> =  
         rawAirports.map(RawDataParser.parseAirport);

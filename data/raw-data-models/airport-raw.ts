@@ -1,3 +1,4 @@
+// Model for airport raw data coming from the json containing existing airports
 export default interface AirportRaw {
     iso_country: string,
     municipality: string,
