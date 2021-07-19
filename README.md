@@ -19,7 +19,7 @@ I have used NodeJS, ExpressAPI and a hosted (Atlas) MongoDB database to build th
 
 - An endpoint to provide retrieve available airports `/airports?limit=<numMaxResults>&search=<query>`
 - An endpoint to retrieve an specific airport data `/airports/:id/`
-- An endpoint to rerieve arrivals in an specific date range `/airports/:id?begin=<beginDateInMillis>&end=<endDateInMillis>`
+- An endpoint to rerieve arrivals in an specific date range for the ID airport `/airports/:id?begin=<beginDateInMillis>&end=<endDateInMillis>`
 
 The second endpoint was intended to look for departure airports that appeared in arrivals airports query to populate the map component, but due to available time this has been decided to not be implemented.
 
