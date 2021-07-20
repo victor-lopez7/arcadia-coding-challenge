@@ -1,5 +1,6 @@
 # Arcadia coding challenge
 Repository to store the solution for the arcadia coding challenge along with relevant information involved in the development.
+The main language for the development has been TypeScript.
 
 ## Running in docker
 `docker-compose up`
@@ -26,6 +27,8 @@ The second endpoint was intended to look for departure airports that appeared in
 Some validation has been made in server side so it could be consumed by any other application, not only the current one, reducing response time in this other possible apps, so we do not make invalid calls to OpenSKy.
 
 ## Frontend
+The frontend of the application has been coded using React framework.
+
 The idea was to implement by hand every single component (to show coding skills) and not using any external component, but, to meet requirements a table component (DataGrid, from materialUI) has been used.
 
 Several considerations:
